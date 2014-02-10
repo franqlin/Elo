@@ -98,7 +98,7 @@ public class InserirAtualizarContatos extends Activity
 			Log.v(TAG, "click:: buscar endereco");		
 			enderecoEditText.setText(".... relaxe!");
 			pb.setVisibility(View.VISIBLE);
-			locationListener = new EloLocationListener();
+			locationListener = new GPSLocationListener();
 			locationMangaer.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10,locationListener);
 			
 			} else {
@@ -113,7 +113,7 @@ public class InserirAtualizarContatos extends Activity
 		return Settings.Secure.isLocationProviderEnabled(contentResolver, LocationManager.GPS_PROVIDER);
 	}
 
-	protected void alertaGPS(String title, String mymessage) {
+	protected void alertaGPS(String titulo, String msg) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("GPS desabilitado")
 				.setCancelable(false)
@@ -137,7 +137,7 @@ public class InserirAtualizarContatos extends Activity
 		alert.show();
 	}
 	   
-	private class EloLocationListener implements LocationListener {
+	private class GPSLocationListener implements LocationListener {
         @Override
         public void onLocationChanged(Location location) {
              	pb.setVisibility(View.INVISIBLE);

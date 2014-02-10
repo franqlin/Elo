@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-import org.shortlets.elo.addressbook.InserirAtualizarContatos;
-
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,112 +19,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.util.Log;
 
 public class GPSUtil extends Service implements LocationListener {
 
 	private final Context contexto;
-	private boolean isGPSAtivo = false;
-	private boolean isRedeAtiva = false;
-	private boolean temAlcance = false;
+
 	private Location location; 
-	private double latitude; 
-	private double longitude;
-	private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; 
-
-	private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
-
 	protected LocationManager locationManager;
-
 	public GPSUtil(Context context) {
 		this.contexto = context;
-		getLocation();
 	}
-
-	public Location getLocation() {
-		try {
-			locationManager = (LocationManager) contexto.getSystemService(LOCATION_SERVICE);
-			isGPSAtivo = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-			isRedeAtiva = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-			
-
-			 if (isGPSAtivo && isRedeAtiva) {
-				this.temAlcance = true;
-				if (isRedeAtiva) {
-					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,MIN_TIME_BW_UPDATES,MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-					Log.d("Rede", "REDE ATIVADA");
-					if (locationManager != null) {
-						location = locationManager
-								.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-						if (location != null) {
-							latitude = location.getLatitude();
-							longitude = location.getLongitude();
-						}
-					}
-				}
-				if (isGPSAtivo) {
-					    this.temAlcance = true;
-						locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,MIN_TIME_BW_UPDATES,MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-						location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-						latitude = location.getLatitude();
-						longitude = location.getLongitude();
-						
-						Log.d("GPS", "GPS Habilitado");
-						if (locationManager != null) {
-							location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-							if (location != null) {
-								latitude = location.getLatitude();
-								longitude = location.getLongitude();
-							}
-						}
-					}
-				
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return location;
-	}
-	
-	public void pararGPS(){
-		if(locationManager != null){
-			locationManager.removeUpdates(GPSUtil.this);
-		}		
-	}
-	
-	public double getLatitude(){
-		return location!=null ?location.getLatitude():0.0;
-	}
-	
-	public double getLongitude(){
-		return location != null? location.getLongitude() : 0.0;
-	}
-	
-	public boolean temLocalizacao() {
-		return this.temAlcance;
-	}
-	
-	public void exibirMenssagemexibirMenssagemexibirMenssagem(){
-		AlertDialog.Builder alertDialog = new AlertDialog.Builder(contexto);
-   	    alertDialog.setTitle("Configuração do gps");
-        alertDialog.setMessage("GSP não habilitado. Gostaria de configurá-lo?");
-        alertDialog.setPositiveButton("Configuração", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int which) {
-            	Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            	contexto.startActivity(intent);
-            }
-        });
- 
-        alertDialog.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            dialog.cancel();
-            }
-        });
-        alertDialog.show();
-	}
-	
    public String  getEndereco(){
 	   Geocoder geocoder = new Geocoder(contexto, Locale.getDefault());
 	   List <Address> listaEndereco = null;
@@ -158,9 +62,15 @@ public class GPSUtil extends Service implements LocationListener {
 	   
    }
    
+	public static  Boolean displayGpsStatus(final Activity activity) {
+		ContentResolver contentResolver = activity.getContentResolver();
+		return Settings.Secure.isLocationProviderEnabled(contentResolver, LocationManager.GPS_PROVIDER);
+	}
 
+     
 	@Override
 	public void onLocationChanged(Location location) {
+
 	}
 
 	@Override

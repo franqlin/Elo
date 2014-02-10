@@ -32,5 +32,6 @@
     <string name="button_delete">Apagar</string>
     <string name="button_buscar">Buscar</string>
     <string name="title_activity_add_contact">Elo</string>
+    <string name="title_activity_onde_estou">OndeEstouActivity</string>
 
 </resources>
